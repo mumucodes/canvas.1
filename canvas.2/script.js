@@ -10,7 +10,7 @@ myImage.addEventListener('load', function(){
     
     ctx.drawImage(myImage, 0, 0, canvas.width, canvas.height)
     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     let particlesArray = [];
     const numberOfParticles = 5000;
@@ -45,9 +45,15 @@ myImage.addEventListener('load', function(){
         this.speed = 0;
         this.velocity = Math.random() * 0.5;
         this.size= Math.random() * 1.5 +1;
+        this.position1 = Math.floor(this.y);
+        this.position2 = Math.floor(this.x);
     }
     update(){
-        this.y += this.velocity;
+        this.position1 = Math.floor(this.y);
+        this.position2 = Math.floor(this.x);
+        this.speed = mappedImage[this.position1][this.position2][0];
+        let movement = (2.5 - this.speed) + this.velocity;
+        this.y += movement;
         if(this.y > canvas.height){
             this.y = 0;
             this.x = Math.random() * canvas.width;
@@ -55,7 +61,7 @@ myImage.addEventListener('load', function(){
     }
     draw(){
         ctx.beginPath();
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = 'green';
         ctx.arc(this.x, this.y, this.size,  0, Math.PI *2);
         ctx.fill();
     }
@@ -67,12 +73,13 @@ myImage.addEventListener('load', function(){
     }
     init();
     function animate(){
-    ctx.drawImage(myImage, 0, 0, canvas.width, canvas.height)
         ctx.globalAlpha = 0.05;
         ctx.fillStyle = 'rgb(0,0,0)';
         ctx.fillRect(0,0, canvas.width, canvas.height);
+        ctx.globalAlpha = 0.2;
         for (let i=0; i < particlesArray.length; i++){
             particlesArray[i].update();
+            ctx.globalAlpha = particlesArray[i].speed * 0.5;
             particlesArray[i].draw();
         }
         requestAnimationFrame(animate);
